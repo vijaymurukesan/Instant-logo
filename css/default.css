@@ -4,5 +4,10 @@
       margin:0 10px 10px 0;
       padding:20px;
       text-align: center;
+    }
+    .gooddogregular {
       font-family: gooddogregular;
+    }
+    .alex_brushregular{
+    	font-family: alex_brushregular;
     }
