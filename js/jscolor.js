@@ -390,7 +390,7 @@ var jscolor = {
 					case 'left': a=1; b=0; c=-1; break;
 					case 'right':a=1; b=0; c=1; break;
 					case 'top':  a=0; b=1; c=-1; break;
-					default:     a=0; b=1; c=1; break;
+					default:     a=0; b=0; c=1; break;
 				}
 				var l = (ts[b]+ps[b])/2;
 

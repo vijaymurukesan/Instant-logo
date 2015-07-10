@@ -21,12 +21,10 @@ var instantLogo = (function(){
 			$('#searchList').html('');
 			displayLogo();	
 		});
-
-		$('input').on('keyup', function(e){
+		$('#userLogoInput').on('keyup', function(e){
 			e.preventDefault();
-			var code = e.which; // recommended to use e.which, it's normalized across browsers
-			    //if(code==13)e.preventDefault();
-			    if(code==32||code==13||code==188||code==186){
+			var code = e.which; 
+			    if(code==13){
 					e.preventDefault()
 					$('#searchList').html('');
 					displayLogo();        
@@ -34,61 +32,85 @@ var instantLogo = (function(){
 		 			e.preventDefault()
 		 		}
 		});
-		$('#colorPicker').on('blur', function(){
+		// $('#colorPicker').on('blur', function(){
+		// 	var hexvalue = '#' + $(this).val();
+		// 	fontcolor(hexvalue);
+		// });
+		$('#bgPicker').on('blur', function(){
 			var hexvalue = '#' + $(this).val();
-			fontcolor(hexvalue);
-		})
+			backgroundcolor(hexvalue);
+		});
+		displayLogo();
+	}
+	this.eachCharacterStyleTool = function(logoName){
+		var logoName = logoName;
+		$('#eachCharPicker').html('');
+		for(var i=0; i<logoName.length; i++){
+			var number = i+ 1;
+			$('#eachCharPicker').append('<input type="text" name="eachCharStyle" class="color" value="000" id="char' + number + '" />'  );
+		}
+
+		$('#pickers input, #eachCharPicker input').on('blur',function(){
+			var hexvalue = '#' + $(this).val();
+			var functionName = this.name;
+			var id = this.id;
+			//find obj
+			var fn = window[functionName];
+			// is object
+			if (typeof fn === "function") fn(hexvalue, id);
+		});
 
 	}
 	this.displayLogo = function(){
-		var logoName = $('input').val();
+		var logoName = $('#userLogoInput').val();
+		eachCharacterStyleTool(logoName);
 		if(logoName !==''){
-
 			$(fontName).each(function(index, value){
-			var classes = value + ' ' + 'color';
 			var logoNameDom = $('<h2>').attr({
-												'class': classes
-			
+												'class': value
 											});
 			for(var i=0; i<logoName.length; i++){
 				console.log(logoName[i]);
 				logoNameDom.append('<span class="char'+ (i+1) +'">'+ logoName[i]+'</span>');
 			}
-
 			var logo = $('<div>')
 						.attr({
 								'class':'col-m-6 bg'
 							}).append(logoNameDom);
-
 			$('#searchList').append(logo);
 			});	
 		}
 	}
+	var styleProperties = {
+		'fontcolor': '.font-color { color:"#000" }',
+	};
+	var cssString;
 	this.buildStyleSheet = function(id, cssrule){
-		var idwithHash = '#'+id;
-		if($(idwithHash).length == 0){
-			var style = $('<style>').attr({
-									'rel': 'stylesheet',
-									'id': id
-									})
-									.text(cssrule);
-
-			$('head').append(style);
-		} else
-		{
-			$(idwithHash).text(cssrule);	
+		styleProperties[id] = cssrule;
+		cssString = '';
+		console.log(styleProperties);
+		for(var x in styleProperties){
+			
+			cssString = cssString.concat(styleProperties[x]);
 		}
-		
-		
-		
+		console.log(cssString);
+		$('#userModifiedCSS').html(cssString);
 	}
 	this.fontcolor = function(textcolor){
-		var id = 'color',
-		color = textcolor,
-		cssRuleColor = '.color{color:' + color +' }';
-		buildStyleSheet( id, cssRuleColor)
+		var id = 'fontcolor',
+		cssRuleColor = '.font-color { color:' + textcolor +' }';
+		buildStyleSheet( id, cssRuleColor);
 	}
+	this.backgroundcolor = function(bg){
+		var id = 'background',
+		cssRuleColor = '.bg > div{ background:' + bg +' }';
 
+		buildStyleSheet( id, cssRuleColor);
+	}
+	this.eachCharStyle = function(hexvalue, id){
+		cssRule = '.'+id+'{color:'+ hexvalue +'}';
+		buildStyleSheet( id, cssRule);
+	}
 	return {
 		init : this.init,
 		fontcolor: this.fontcolor
